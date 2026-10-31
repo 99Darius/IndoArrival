@@ -1,0 +1,44 @@
+{
+  "manifest_version": 3,
+  "name": "IndoArrival — Indonesia arrival card autofill",
+  "version": "1.0.0",
+  "description": "Fills Indonesia's All Indonesia arrival card from answers you gave once. You check every field and submit. Unofficial.",
+  "permissions": [
+    "storage"
+  ],
+  "host_permissions": [
+    "https://allindonesia.imigrasi.go.id/*"
+  ],
+  "action": {
+    "default_popup": "src/popup/index.html",
+    "default_title": "IndoArrival",
+    "default_icon": {
+      "16": "icons/icon-16.png",
+      "32": "icons/icon-32.png",
+      "48": "icons/icon-48.png"
+    }
+  },
+  "background": {
+    "service_worker": "src/background/index.ts",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://allindonesia.imigrasi.go.id/*"
+      ],
+      "js": [
+        "src/content/govForm.ts"
+      ],
+      "run_at": "document_idle"
+    }
+  ],
+  "icons": {
+    "16": "icons/icon-16.png",
+    "32": "icons/icon-32.png",
+    "48": "icons/icon-48.png",
+    "128": "icons/icon-128.png"
+  },
+  "homepage_url": "https://indoarrival.vercel.app",
+  "minimum_chrome_version": "105"
+}

@@ -1,0 +1,65 @@
+#!/usr/bin/env bash
+# IndoArrival Chrome Web Store CLI (Chrome Web Store API v2).
+#
+#   store/cws build              build extension + zip -> store/indoarrival-<version>.zip
+#   store/cws status             item status (draft / in review / published)
+#   store/cws upload [zip]       upload a new package as a DRAFT (does not publish)
+#   store/cws publish --confirm  submit the uploaded draft for review / publish
+#
+# Auth: gcloud impersonates the service account in cws.conf (the caller needs
+# roles/iam.serviceAccountTokenCreator on it). No key files.
+set -euo pipefail
+here="$(cd "$(dirname "$0")" && pwd)"
+root="$(dirname "$here")"
+# shellcheck source=/dev/null
+source "$here/cws.conf"
+API=https://chromewebstore.googleapis.com
+
+die() { echo "cws: $*" >&2; exit 1; }
+version() { python3 -c "import json;print(json.load(open('$root/extension/manifest.json'))['version'])"; }
+token() {
+  gcloud auth print-access-token --impersonate-service-account="$SERVICE_ACCOUNT" \
+    --scopes=https://www.googleapis.com/auth/chromewebstore 2>/dev/null \
+    || die "cannot get a token for $SERVICE_ACCOUNT (gcloud login / IAM role?)"
+}
+need_ids() {
+  [ -n "${PUBLISHER_ID:-}" ] || die "set PUBLISHER_ID in store/cws.conf (Dashboard -> Account)"
+  [ -n "${ITEM_ID:-}" ] || die "set ITEM_ID in store/cws.conf (created by the first upload in the Dashboard)"
+}
+call() { # METHOD URL [curl args...]
+  local m=$1 u=$2; shift 2
+  curl -sS -X "$m" -H "Authorization: Bearer $(token)" "$@" "$u"
+  echo
+}
+
+case "${1:-}" in
+  build)
+    (cd "$root/extension" && npm run build >/dev/null)
+    zip="$here/indoarrival-$(version).zip"
+    rm -f "$zip"
+    (cd "$root/extension/dist" && zip -qr -X "$zip" . -x '.*' '*/.*')
+    echo "$zip"
+    ;;
+  token-check)
+    t=$(token); echo "ok (${#t}-char token for $SERVICE_ACCOUNT)"
+    ;;
+  status)
+    need_ids
+    call GET "$API/v2/publishers/$PUBLISHER_ID/items/$ITEM_ID:fetchStatus"
+    ;;
+  upload)
+    need_ids
+    zip="${2:-$here/indoarrival-$(version).zip}"
+    [ -f "$zip" ] || die "no $zip — run: store/cws build"
+    call POST "$API/upload/v2/publishers/$PUBLISHER_ID/items/$ITEM_ID:upload" \
+      -H "Content-Type: application/zip" --data-binary "@$zip"
+    ;;
+  publish)
+    need_ids
+    [ "${2:-}" = "--confirm" ] || die "publishing is public and outward-facing; re-run with --confirm"
+    call POST "$API/v2/publishers/$PUBLISHER_ID/items/$ITEM_ID:publish" -H "Content-Type: application/json" -d '{}'
+    ;;
+  *)
+    sed -n '2,10p' "$0" | sed 's/^# \{0,1\}//'
+    ;;
+esac

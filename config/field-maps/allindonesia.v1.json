@@ -1,0 +1,311 @@
+{
+  "$schema": "../field-map.schema.json",
+  "service": "all-indonesia",
+  "version": 1,
+  "capturedAt": "2026-06-22",
+  "host": "allindonesia.imigrasi.go.id",
+  "notes": "Stable IDs and timestamp-prefix IDs verified against the official site JavaScript on 2026-10-18. Later steps also learn live conditional fields by demonstration. Replay handles searchable and search-disabled dropdowns; the user reviews and submits.",
+  "neverAutoSubmit": true,
+  "submitButtonText": [
+    "Kirim",
+    "Submit"
+  ],
+  "nextButtonText": [
+    "Lanjut",
+    "Next"
+  ],
+  "dropdownPopupSearchSelector": "input[placeholder=\"Cari\"]",
+  "steps": [
+    {
+      "step": 1,
+      "path": "/arrival-card-submission/personal-information",
+      "title": "Personal information",
+      "fields": [
+        {
+          "key": "nationality",
+          "selector": "[id^=\"spi_nationality_\"]",
+          "control": "dropdown",
+          "humanPicks": true,
+          "policy": "always"
+        },
+        {
+          "key": "fullName",
+          "selector": "[id^=\"spi_full_name_\"]",
+          "control": "text",
+          "policy": "always"
+        },
+        {
+          "key": "dob",
+          "selector": "[id^=\"spi_dob_\"]",
+          "control": "text",
+          "format": "DD/MM/YYYY",
+          "policy": "always"
+        },
+        {
+          "key": "countryOrPlaceOfBirth",
+          "selector": "[id^=\"spi_country_or_place_of_birth_\"]",
+          "control": "dropdown",
+          "humanPicks": true,
+          "policy": "always"
+        },
+        {
+          "key": "gender",
+          "selector": "[id^=\"spi_gender_\"]",
+          "control": "radio",
+          "options": [
+            "LAKI-LAKI",
+            "PEREMPUAN"
+          ],
+          "humanPicks": true,
+          "policy": "always",
+          "captured": false,
+          "note": "gender inputs had no spi_ id in capture; selector is a best-effort guess to verify at runtime"
+        },
+        {
+          "key": "passportNo",
+          "selector": "[id^=\"spi_passport_no_\"]",
+          "control": "text",
+          "sensitive": true,
+          "policy": "always"
+        },
+        {
+          "key": "passportExpiry",
+          "selector": "[id^=\"spi_date_of_passport_expiry_\"]",
+          "control": "text",
+          "format": "DD/MM/YYYY",
+          "policy": "always"
+        },
+        {
+          "key": "occupation",
+          "selector": "[id^=\"spi_occupation_\"]",
+          "control": "dropdown",
+          "humanPicks": true,
+          "policy": "always",
+          "captured": false,
+          "note": "occupation 'Pilih' dropdown; selector best-effort, verify at runtime"
+        },
+        {
+          "key": "mobileNo",
+          "selector": "[id^=\"spi_mobile_no_\"]",
+          "control": "text",
+          "policy": "always"
+        },
+        {
+          "key": "email",
+          "selector": "[id^=\"spi_email_\"]",
+          "control": "text",
+          "policy": "always"
+        }
+      ]
+    },
+    {
+      "step": 2,
+      "path": "/arrival-card-submission/travel-details",
+      "title": "Travel details",
+      "captured": true,
+      "note": "Arrival is a search-disabled dropdown; departure is an editable date input. Permit selection reveals the permit-number field.",
+      "expectedFields": [
+        {
+          "key": "arrivalDate",
+          "label": "Arrival Date to Indonesia",
+          "control": "dropdown",
+          "policy": "smart"
+        },
+        {
+          "key": "departureDate",
+          "label": "Departure Date from Indonesia",
+          "format": "DD/MM/YYYY",
+          "policy": "smart"
+        },
+        {
+          "key": "hasVisaOrStayPermit",
+          "label": "Do you already have a Visa or Stay Permit?",
+          "control": "radio",
+          "policy": "ask"
+        }
+      ],
+      "fields": [
+        {
+          "key": "arrivalDate",
+          "selector": "[id^=\"std_arrival_date_\"]",
+          "control": "dropdown",
+          "policy": "smart"
+        },
+        {
+          "key": "departureDate",
+          "selector": "[id^=\"std_departure_date_\"]",
+          "control": "text",
+          "format": "DD/MM/YYYY",
+          "policy": "smart"
+        },
+        {
+          "key": "hasVisaOrStayPermit",
+          "selector": "[id^=\"std_do_have_visa_kitas_kitap_\"]",
+          "control": "radio",
+          "policy": "always"
+        },
+        {
+          "key": "stayPermitNo",
+          "selector": "[id^=\"std_visa_kitas_kitap_no_\"]",
+          "control": "text",
+          "policy": "always",
+          "sensitive": true
+        }
+      ]
+    },
+    {
+      "step": 3,
+      "path": "/arrival-card-submission/mode-of-transport",
+      "title": "Mode of transportation & address",
+      "captured": true,
+      "expectedFields": [
+        {
+          "key": "modeOfTransport",
+          "label": "Mode of Transport",
+          "control": "dropdown",
+          "policy": "always"
+        },
+        {
+          "key": "purposeOfTravel",
+          "label": "Purpose of Travel",
+          "control": "dropdown",
+          "policy": "always"
+        },
+        {
+          "key": "portOfEntry",
+          "label": "Port of Entry",
+          "control": "dropdown",
+          "policy": "smart"
+        },
+        {
+          "key": "typeOfAirTransport",
+          "label": "Type of Air Transport",
+          "control": "dropdown",
+          "policy": "always"
+        },
+        {
+          "key": "flightName",
+          "label": "Flight Name",
+          "control": "dropdown",
+          "policy": "smart"
+        },
+        {
+          "key": "flightNumber",
+          "label": "Flight Number",
+          "control": "text",
+          "policy": "smart"
+        },
+        {
+          "key": "accommodationType",
+          "label": "Type of Accommodation",
+          "control": "dropdown",
+          "policy": "ask"
+        },
+        {
+          "key": "addressInIndonesia",
+          "label": "Address in Indonesia",
+          "control": "text",
+          "policy": "ask"
+        }
+      ],
+      "fields": [
+        {
+          "key": "modeOfTransport",
+          "selector": "[id^=\"smta_mode_transport_\"]",
+          "control": "dropdown",
+          "policy": "always"
+        },
+        {
+          "key": "purposeOfTravel",
+          "selector": "[id^=\"smta_purpose_travel_\"]",
+          "control": "dropdown",
+          "policy": "always"
+        },
+        {
+          "key": "portOfEntry",
+          "selector": "[id^=\"smta_place_of_arrival_air_\"]",
+          "control": "dropdown",
+          "policy": "always"
+        },
+        {
+          "key": "typeOfAirTransport",
+          "selector": "[id^=\"smta_air_transport_type_\"]",
+          "control": "dropdown",
+          "policy": "always"
+        },
+        {
+          "key": "flightName",
+          "selector": "[id^=\"smta_flight_name_\"]",
+          "control": "dropdown",
+          "policy": "always"
+        },
+        {
+          "key": "flightCode",
+          "selector": "[id^=\"smta_flight_no_prefix_\"]",
+          "control": "text",
+          "policy": "always"
+        },
+        {
+          "key": "flightNumber",
+          "selector": "[id^=\"smta_flight_no_\"]",
+          "control": "text",
+          "policy": "always"
+        },
+        {
+          "key": "accommodationType",
+          "selector": "[id^=\"smta_residence_type_\"]",
+          "control": "dropdown",
+          "policy": "always"
+        },
+        {
+          "key": "addressInIndonesia",
+          "selector": "[id^=\"smta_residential_address_\"]",
+          "control": "text",
+          "policy": "always"
+        }
+      ]
+    },
+    {
+      "step": 4,
+      "path": "/arrival-card-submission/declaration",
+      "title": "Customs declaration (BC 2.2)",
+      "captured": true,
+      "neverStore": true,
+      "expectedFields": [
+        {
+          "key": "baggageCount",
+          "label": "Number of Baggage Arriving with You",
+          "control": "text",
+          "policy": "ask"
+        },
+        {
+          "key": "goodsToDeclare",
+          "label": "Do you carry goods that must be declared?",
+          "control": "radio",
+          "policy": "ask"
+        },
+        {
+          "key": "imeiRegistration",
+          "label": "Bringing phones/computers for local networks (IMEI)?",
+          "control": "radio",
+          "policy": "ask"
+        },
+        {
+          "key": "certify",
+          "label": "I certify I understand and agree",
+          "control": "checkbox",
+          "policy": "ask"
+        }
+      ],
+      "fields": [
+        {
+          "key": "baggageCount",
+          "selector": "[id^=\"asd_total_baggage_\"]",
+          "control": "text",
+          "policy": "ask"
+        }
+      ],
+      "note": "Default baggage to 0 for each new trip, keeping any value already entered. Declaration and certification answers are never retained or replayed."
+    }
+  ]
+}

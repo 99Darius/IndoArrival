@@ -1,0 +1,140 @@
+/* IndoArrival — travel-document design system.
+   Aesthetic: immigration teal + passport paper, MRZ/boarding-pass signature. */
+
+:root {
+  --ink: #0E3A34;        /* deep immigration teal-green */
+  --ink-2: #14524a;      /* lighter band */
+  --paper: #FBFAF6;      /* document paper */
+  --panel: #F3F0E8;      /* inset panel */
+  --stamp: #C8452D;      /* stamp-ink red — primary action / record */
+  --ok: #2E7D5B;         /* ready/confirm green */
+  --slate: #5E6B67;      /* muted text */
+  --line: #DcdFd7;       /* hairline */
+  --shadow: 0 1px 2px rgba(14, 58, 52, 0.06), 0 6px 18px rgba(14, 58, 52, 0.08);
+  --mono: ui-monospace, "SF Mono", "Menlo", monospace;
+  --sans: -apple-system, system-ui, "Segoe UI", Roboto, sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+body { margin: 0; }
+
+.ia {
+  width: 360px;
+  font-family: var(--sans);
+  color: var(--ink);
+  background: var(--paper);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ---- header band ---- */
+.ia-head {
+  background: var(--ink);
+  color: var(--paper);
+  padding: 12px 16px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.ia-mark { display: flex; align-items: baseline; gap: 7px; }
+.ia-mark b { font-size: 15px; font-weight: 800; letter-spacing: -0.02em; }
+.ia-mark span { font-family: var(--mono); font-size: 9px; letter-spacing: 0.18em; color: #9fc7bf; text-transform: uppercase; }
+.ia-chip {
+  font-family: var(--mono); font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase;
+  color: #cfe6e0; display: inline-flex; align-items: center; gap: 6px; cursor: default; user-select: none;
+}
+/* A status readout, not a control: a dot + label rather than a pill outline. */
+.ia-chip::before { content: ""; width: 6px; height: 6px; border-radius: 999px; background: currentColor; }
+.ia-chip.rec { color: #ffd9d0; }
+.ia-chip.ready { color: #b9eccf; }
+
+/* ---- body ---- */
+.ia-body { padding: 16px; }
+.ia-kicker { font-family: var(--mono); font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--slate); margin: 0 0 4px; }
+.ia-h1 { font-size: 18px; font-weight: 800; letter-spacing: -0.02em; margin: 0 0 6px; line-height: 1.2; }
+.ia-lede { font-size: 12.5px; line-height: 1.5; color: var(--slate); margin: 0 0 14px; }
+
+/* ---- buttons ---- */
+.ia-btn {
+  width: 100%; border: 0; border-radius: 10px; padding: 11px 14px; cursor: pointer;
+  font-family: var(--sans); font-size: 13.5px; font-weight: 700; letter-spacing: -0.01em;
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  transition: transform .04s ease, filter .15s ease;
+}
+.ia-btn:active { transform: translateY(1px); }
+.ia-btn:disabled { opacity: .45; cursor: not-allowed; }
+.ia-btn-primary { background: var(--stamp); color: #fff; box-shadow: var(--shadow); }
+.ia-btn-primary:hover:not(:disabled) { filter: brightness(1.05); }
+.ia-btn-ink { background: var(--ink); color: #fff; }
+.ia-btn-ghost { background: transparent; color: var(--ink); border: 1px solid var(--line); font-weight: 600; }
+.ia-btn-sm { padding: 7px 10px; font-size: 11.5px; border-radius: 8px; }
+
+.ia-rec-dot { width: 9px; height: 9px; border-radius: 999px; background: #fff; animation: ia-pulse 1.1s infinite; }
+@keyframes ia-pulse { 0%,100% { opacity: 1; } 50% { opacity: .35; } }
+@media (prefers-reduced-motion: reduce) { .ia-rec-dot { animation: none; } }
+
+/* ---- fields ---- */
+.ia-label { font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--slate); display: block; margin-bottom: 3px; }
+.ia-input, .ia-select {
+  width: 100%; padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px;
+  font-family: var(--sans); font-size: 13px; color: var(--ink); background: #fff;
+}
+.ia-input:focus, .ia-select:focus { outline: 2px solid var(--ink-2); outline-offset: 0; border-color: transparent; }
+.ia-field { margin-bottom: 9px; }
+.ia-row { display: flex; gap: 8px; align-items: center; }
+
+.ia-panel { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 11px 12px; margin: 4px 0 12px; }
+.ia-stat { display: flex; align-items: baseline; gap: 8px; }
+.ia-stat b { font-size: 26px; font-weight: 800; letter-spacing: -0.03em; }
+.ia-stat span { font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--slate); }
+
+.ia-note { font-size: 11px; line-height: 1.45; color: var(--stamp); margin: 8px 0 0; }
+.ia-status { font-family: var(--mono); font-size: 11px; color: var(--ink-2); margin-top: 10px; line-height: 1.4; }
+.ia-section-t { font-family: var(--mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--slate); margin: 2px 0 6px; }
+
+/* ---- perforation divider (signature) ---- */
+.ia-perf { position: relative; height: 18px; margin: 4px 0; }
+.ia-perf::before {
+  content: ""; position: absolute; top: 50%; left: 14px; right: 14px;
+  border-top: 2px dashed var(--line);
+}
+.ia-perf::after, .ia-perf .notch {
+  content: ""; position: absolute; top: 50%; transform: translateY(-50%);
+  width: 16px; height: 16px; border-radius: 999px; background: var(--ink);
+}
+.ia-perf::after { left: -8px; }
+.ia-perf .notch { right: -8px; }
+
+/* ---- MRZ footer (signature) ---- */
+.ia-mrz {
+  font-family: var(--mono); font-size: 10px; letter-spacing: 0.06em; color: var(--slate);
+  background: var(--panel); border-top: 1px solid var(--line);
+  padding: 8px 16px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+
+/* ---- ad footer ---- */
+.ia-ad { display: flex; gap: 8px; align-items: center; padding: 9px 16px 12px; font-size: 11px; color: var(--slate); }
+.ia-ad .tag { font-family: var(--mono); font-size: 8px; letter-spacing: 0.14em; text-transform: uppercase; color: #a7b0ac; display: block; }
+.ia-ad a { color: var(--ink-2); font-weight: 600; }
+
+.ia-link { background: none; border: 0; color: var(--ink-2); font-size: 12px; cursor: pointer; padding: 0; text-decoration: underline; }
+
+/* ---- travellers ---- */
+.ia-people { display: flex; flex-direction: column; gap: 6px; margin: 4px 0 14px; }
+.ia-person { display: flex; align-items: stretch; border: 1px solid var(--line); border-radius: 10px; background: #fff; }
+.ia-person.on { border-color: var(--ink); box-shadow: 0 0 0 1px var(--ink); }
+.ia-person-pick { flex: 1; display: flex; align-items: center; gap: 10px; padding: 10px 12px; border: 0; background: none; cursor: pointer; text-align: left; font: inherit; color: var(--ink); }
+.ia-dot { width: 14px; height: 14px; border-radius: 999px; border: 2px solid var(--line); flex-shrink: 0; }
+.ia-person.on .ia-dot { border-color: var(--ink); background: radial-gradient(var(--ink) 0 3px, transparent 4px); }
+.ia-person-name { font-weight: 700; font-size: 13.5px; }
+.ia-person-meta { margin-left: auto; font-size: 11px; color: var(--slate); }
+.ia-x { border: 0; background: none; color: var(--slate); font-size: 16px; padding: 0 12px; cursor: pointer; border-left: 1px solid var(--line); }
+.ia-x:hover { color: var(--stamp); }
+.ia-person-add { border: 1px dashed var(--line); border-radius: 10px; background: none; padding: 9px 12px; text-align: left; color: var(--ink-2); font: 600 12.5px var(--sans); cursor: pointer; }
+.ia-person-add:hover { border-color: var(--ink-2); }
+.ia-label { display: block; font-size: 11.5px; font-weight: 600; color: var(--ink); margin: 2px 0 5px; }
+.ia-input { width: 100%; box-sizing: border-box; padding: 9px 11px; border: 1px solid var(--line); border-radius: 9px; font: 13.5px var(--sans); margin-bottom: 12px; background: #fff; color: var(--ink); }
+.ia-input:focus { outline: 2px solid var(--ink); outline-offset: 0; }
+.ia-link { display: block; margin: 10px auto 0; border: 0; background: none; color: var(--slate); font: 600 12px var(--sans); cursor: pointer; text-decoration: underline; text-underline-offset: 2px; }
+.ia-link:hover { color: var(--ink); }
+.ia-note-muted { font-size: 11.5px; line-height: 1.45; color: var(--slate); margin: 8px 0 0; }
+.ia-foot { justify-content: space-between; margin-top: 14px; padding-top: 10px; border-top: 1px dashed var(--line); }
+.ia-foot .ia-link { margin: 0; }

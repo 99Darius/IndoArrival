@@ -1,0 +1,12 @@
+{
+  "name": "indoarrival-site",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@vercel/blob": "^2.0.0"
+  },
+  "scripts": {
+    "leads": "vercel env pull .env.local --yes >/dev/null && node --env-file=.env.local scripts/leads.mjs"
+  }
+}
