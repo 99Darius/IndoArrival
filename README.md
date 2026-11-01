@@ -7,6 +7,8 @@ Fill the card once as usual and IndoArrival remembers each traveller's answers.
 Next trip, pick who is travelling, press **Fill** on each page, check every
 answer, then press Next and Submit yourself.
 
+Install: https://chromewebstore.google.com/detail/emdkbckehgnfnjggcfndccmjahncjkmc
+
 Website: https://indoarrival.vercel.app
 
 ## Privacy

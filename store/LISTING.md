@@ -31,7 +31,7 @@ What it fills
 • Phone code, phone number and email
 • Visa or stay-permit number, last flight, port of entry and accommodation (when you taught them)
 • Your usual declaration answers (health, countries visited, quarantine, goods, phones/IMEI), if you taught them
-• Arrival date defaults to today, departure to 14 days later — change either any time
+• Trip dates follow your usual pattern (for example: arrive tomorrow, leave 14 days later). Change either any time.
 
 What it never does
 • It never presses Next or Submit. You stay in control and responsible for your declaration.
@@ -43,6 +43,9 @@ Keep a separate set of answers for each person and switch between them in one cl
 
 Privacy
 Your answers are stored only in this browser's extension storage. Delete one traveller, or press "Erase all data", or uninstall to remove everything. Full policy: https://indoarrival.vercel.app/privacy.html
+
+Open source
+The code is public, so anyone can check what it does: https://github.com/99Darius/IndoArrival
 
 IndoArrival is an independent tool. It is not affiliated with, endorsed by, or operated for the Government of Indonesia or the Directorate General of Immigration. The extension shows one advertisement for Rumah123, a property website; Rumah123 receives no data from IndoArrival.
 ```
