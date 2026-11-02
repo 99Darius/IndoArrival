@@ -3,7 +3,8 @@ import fieldMapJson from "../../../config/field-maps/allindonesia.v1.json";
 import { isReplayable, replayLearned, type FieldMap, type LearnedField } from "./formFill";
 import { controls, describeField, fieldKey } from "./formFields";
 import { dateRuleText, isFormPage, pageNotes, planForPage, rememberable } from "./tripDefaults";
-import { ACTIVE_PROFILE_KEY, DRAFT_KEY, LEARNED_KEY, type RecordingDraft } from "../lib/keys";
+import { ACTIVE_PROFILE_KEY, DRAFT_KEY, LEARNED_KEY, REVIEW_KEY, type RecordingDraft } from "../lib/keys";
+import { countFill, isLastPage, offerNever, REVIEW_URL, type ReviewState } from "./reviewAsk";
 import { bus, emit, REPLAYED, SAVE_RECORDING, SAVED } from "./bus";
 
 const STYLE = `
@@ -23,6 +24,10 @@ const STYLE = `
  .action { width: 100%; padding: 9px; background: #C8452D; color: white; font-weight: 700; }
  button:disabled { opacity: .55; cursor: wait; } button:focus-visible { outline: 2px solid #339b7b; outline-offset: 2px; }
  .msg { font-size: 12px; margin: 8px 0 0; } .msg:empty { display: none; }
+ .review { margin-top: 10px; padding: 10px; border-radius: 9px; background: #e6f2ed; } .review p { margin: 0 0 8px; }
+ .review .row { display: flex; flex-wrap: wrap; gap: 6px; } .review a, .review button { padding: 6px 10px; font-size: 12px; }
+ .review a { background: #0E3A34; color: white; border-radius: 7px; text-decoration: none; font-weight: 700; }
+ .review button { background: none; color: #0E3A34; text-decoration: underline; }
 `;
 
 function displayLabel(f: LearnedField): string {
@@ -46,7 +51,8 @@ export function mountFillButton(): void {
   const list = document.createElement("ul"); list.setAttribute("aria-label", "Learned fields");
   const action = document.createElement("button"); action.type = "button"; action.className = "action";
   const msg = document.createElement("div"); msg.className = "msg"; msg.setAttribute("role", "status");
-  header.append(brand, toggle); body.append(title, notes, list, action, msg); panel.append(header, body); root.append(style, panel);
+  const review = document.createElement("div"); review.className = "review"; review.hidden = true;
+  header.append(brand, toggle); body.append(title, notes, list, action, msg, review); panel.append(header, body); root.append(style, panel);
 
   let learned: LearnedField[] = [];
   let travellerId: string | undefined;
@@ -59,6 +65,40 @@ export function mountFillButton(): void {
   let fingerprint = "";
   /** Last value shown per field, so a new or changed answer can be scrolled to. */
   let lastShown = new Map<string, string>();
+  /** This visit to the last page already counted toward the review ask. */
+  let counted = false;
+
+  async function stopAsking() {
+    review.hidden = true;
+    const { [REVIEW_KEY]: s } = await chrome.storage.local.get(REVIEW_KEY);
+    await chrome.storage.local.set({ [REVIEW_KEY]: { ...(s as ReviewState), stopped: true } });
+  }
+  function showReviewAsk(s: ReviewState) {
+    const text = document.createElement("p");
+    text.textContent = "Saving you time? A quick review helps other travellers find IndoArrival.";
+    const link = document.createElement("a");
+    link.href = REVIEW_URL; link.target = "_blank"; link.rel = "noopener noreferrer"; link.textContent = "Leave a review";
+    link.addEventListener("click", () => void stopAsking());
+    const later = document.createElement("button"); later.type = "button"; later.textContent = "Not now";
+    later.addEventListener("click", () => { review.hidden = true; });
+    const row = document.createElement("div"); row.className = "row"; row.append(link, later);
+    if (offerNever(s)) {
+      const never = document.createElement("button"); never.type = "button"; never.textContent = "Never ask again";
+      never.addEventListener("click", () => void stopAsking());
+      row.append(never);
+    }
+    review.replaceChildren(text, row);
+    review.hidden = false;
+  }
+  // A card counts once, when Fill runs on its last page (from the panel or the popup).
+  bus.addEventListener(REPLAYED, async () => {
+    if (counted || !isLastPage(location.pathname)) return;
+    counted = true;
+    const { [REVIEW_KEY]: prev } = await chrome.storage.local.get(REVIEW_KEY);
+    const { state, ask } = countFill(prev as ReviewState | undefined);
+    await chrome.storage.local.set({ [REVIEW_KEY]: state });
+    if (ask) showReviewAsk(state);
+  });
 
   function render() {
     const recording = !!draft?.active;
@@ -150,7 +190,7 @@ export function mountFillButton(): void {
   });
   // Routes, conditional controls and lazy dropdowns can change without navigation.
   window.setInterval(() => {
-    if (path !== location.pathname) { path = location.pathname; msg.textContent = ""; savedNote = null; collapsed = false; }
+    if (path !== location.pathname) { path = location.pathname; msg.textContent = ""; savedNote = null; collapsed = false; counted = false; review.hidden = true; }
     if (!busy) render();
   }, 600);
 }

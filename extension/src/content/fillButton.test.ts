@@ -53,3 +53,36 @@ describe("floating panel", () => {
     expect(root.textContent).toContain("Baggage defaults to 0");
   });
 });
+
+describe("review ask", () => {
+  it("shows after the 3rd card's last-page fill, once per visit, and 'never' stops it", async () => {
+    // Fresh modules: panels mounted by earlier tests also listen on the shared bus.
+    vi.resetModules();
+    const { REVIEW_KEY } = await import("../lib/keys");
+    const { REPLAYED, emit } = await import("./bus");
+    const { mountFillButton } = await import("./fillButton");
+    const store: Record<string, unknown> = { [LEARNED_KEY]: [], [REVIEW_KEY]: { fills: 2, asks: 0, nextAt: 3, stopped: false } };
+    (globalThis as any).chrome = { storage: {
+      local: { get: async () => store, set: async (o: Record<string, unknown>) => Object.assign(store, o) },
+      onChanged: { addListener: () => {} },
+    } };
+    history.replaceState({}, "", "/arrival-card-submission/declaration");
+    mountFillButton(); await Promise.resolve();
+    emit(REPLAYED); emit(REPLAYED); await vi.advanceTimersByTimeAsync(1);
+    expect((store[REVIEW_KEY] as { fills: number }).fills).toBe(3);
+    const box = root.querySelector<HTMLElement>(".review")!;
+    expect(box.hidden).toBe(false);
+    expect(box.querySelector("a")?.getAttribute("href")).toContain("/reviews");
+    expect(box.textContent).not.toContain("Never ask again");
+    // 2nd ask, five cards later, offers "never".
+    store[REVIEW_KEY] = { fills: 7, asks: 1, nextAt: 8, stopped: false };
+    history.replaceState({}, "", "/arrival-card-submission/personal-information"); vi.advanceTimersByTime(600);
+    history.replaceState({}, "", "/arrival-card-submission/declaration"); vi.advanceTimersByTime(600);
+    emit(REPLAYED); await vi.advanceTimersByTimeAsync(1);
+    const never = [...box.querySelectorAll("button")].find(b => b.textContent === "Never ask again")!;
+    never.click(); await vi.advanceTimersByTimeAsync(1);
+    expect(box.hidden).toBe(true);
+    expect((store[REVIEW_KEY] as ReviewStateLike).stopped).toBe(true);
+  });
+});
+type ReviewStateLike = { stopped: boolean };

@@ -6,7 +6,8 @@ is `site/privacy.html`. Edit that file and redeploy (`cd site && vercel deploy -
 Summary (extension v1.0): everything the extension saves stays in
 `chrome.storage.local` in the user's browser; the extension makes no network
 requests, has no server and no analytics; one static Rumah123 ad link; usual
-declaration answers are saved (the user reviews and submits); Erase all data /
+declaration answers are saved (the user reviews and submits); a count of cards filled
+drives an occasional "Leave a review" link (no data sent); Erase all data /
 uninstall deletes everything.
 
 The website (not the extension) has an optional form to sign up for update emails.

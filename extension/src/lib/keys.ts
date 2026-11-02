@@ -21,3 +21,6 @@ export const OPEN_FORM_KEY = "open_form_pending";
 
 /** Which traveller's answers are loaded into LEARNED_KEY. */
 export const ACTIVE_PROFILE_KEY = "active_profile";
+
+/** Review-ask counter (cards filled, asks shown, stopped); no personal data. */
+export const REVIEW_KEY = "review_ask";

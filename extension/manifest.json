@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "IndoArrival — Indonesia arrival card autofill",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Fills Indonesia's All Indonesia arrival card from answers you gave once. You check every field and submit. Unofficial.",
   "permissions": [
     "storage"
