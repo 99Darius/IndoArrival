@@ -235,13 +235,19 @@ async function pickDropdown(trigger: HTMLInputElement, value: string, multi = fa
  * gave when they taught the form — text, dropdown options and choices. Runs
  * sequentially because each dropdown opens a popup. Never advances or submits.
  */
-let running: Promise<FillResult> | null = null;
+let running: { what: string; done: Promise<FillResult> } | null = null;
 
-/** One fill at a time per tab: a second press (popup + panel, double-click) waits for the first. */
+/**
+ * One fill at a time per tab. A second press for the same answers (popup + panel,
+ * double-click) waits for the first. Different answers (another traveller) are
+ * refused: reporting the first fill as theirs would misfile later corrections.
+ */
 export function replayLearned(fields: LearnedField[], map: FieldMap): Promise<FillResult> {
   if (map.neverAutoSubmit !== true) return Promise.reject(new Error("refusing to run: field map does not assert neverAutoSubmit"));
-  running ??= replay(fields, map).finally(() => { running = null; });
-  return running;
+  const what = JSON.stringify(fields);
+  if (running && running.what !== what) return Promise.reject(new Error("Still filling. Wait for it to finish, then press Fill again."));
+  running ??= { what, done: replay(fields, map).finally(() => { running = null; }) };
+  return running.done;
 }
 
 async function replay(fields: LearnedField[], map: FieldMap): Promise<FillResult> {

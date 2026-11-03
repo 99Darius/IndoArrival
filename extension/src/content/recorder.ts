@@ -15,12 +15,14 @@
  * user events count (`isTrusted`), so the page's own scripts can't teach it.
  */
 import { DRAFT_KEY, type RecordingDraft } from "../lib/keys";
-import { bus, emit, REPLAY_END, REPLAY_START, REPLAYED, SAVE_RECORDING, SAVED } from "./bus";
+import { bus, CAPTURE, emit, REPLAY_END, REPLAY_START, REPLAYED, SAVE_RECORDING, SAVED } from "./bus";
 import { isPromptValue, isReplayable, type LearnedField } from "./formFill";
 import { describeField, describeTick, fieldKey, findField, queryField, tickFrom, tickOn, type FormControl } from "./formFields";
 import { isFormPage, rememberable, withDateRules } from "./tripDefaults";
 
 let recording = false;
+/** The traveller the current recording belongs to. */
+let recordingFor: string | undefined;
 let replayDepth = 0;
 /** Traveller filled on this page by the last Fill, if any: corrections go to them. */
 let filledFor: { path: string; travellerId: string } | null = null;
@@ -29,6 +31,10 @@ const captured = new Map<string, LearnedField>();
 const corrections = new Map<string, LearnedField>();
 /** Fields the user touched on this page, and their live elements. */
 const elements = new Map<string, FormControl>();
+/** Ticks the user touched on this page. */
+const touchedTicks = new Set<string>();
+/** Touched here and not yet written to the draft: only these outrank another tab's answer. */
+const pending = new Set<string>();
 const hasStorage = typeof chrome !== "undefined" && !!chrome.storage?.local;
 const keep = (f: LearnedField) => rememberable(f) && isReplayable(f) && !!f.selector;
 const answers = () => withDateRules([...captured.values()].filter(keep));
@@ -36,21 +42,30 @@ let flushTimer: number | undefined;
 let correctionTimer: number | undefined;
 
 /**
- * Re-read touched fields. A dropdown trigger is clicked before its option is
- * picked, and React may replace the element, so read the live control again.
+ * Re-read fields touched in this tab. A dropdown trigger is clicked before its option
+ * is picked, and React may replace the element, so read the live control again. Never
+ * fields only known from the draft: another tab's form may show someone else.
  */
 function refresh(fields: Map<string, LearnedField>) {
   for (const [key, f] of fields) {
     if (f.step !== location.pathname || f.control === "choice") continue;
     if (f.control === "tick") {
+      if (!touchedTicks.has(key)) continue;
       const box = f.selector ? queryField(f.selector) : null;
-      if (box) f.value = tickOn(box) ? "checked" : "";
+      if (box) {
+        const value = tickOn(box) ? "checked" : "";
+        if (value !== f.value) pending.add(key);
+        f.value = value;
+      }
       continue;
     }
+    if (!elements.has(key)) continue;
     let el: Element | null | undefined = elements.get(key);
     if (!el?.isConnected) el = findField(f);
     if (!(el instanceof HTMLInputElement || el instanceof HTMLTextAreaElement || el instanceof HTMLSelectElement)) continue;
-    f.value = f.control === "dropdown" && isPromptValue(el.value) ? "" : describeField(el).value;
+    const value = f.control === "dropdown" && isPromptValue(el.value) ? "" : describeField(el).value;
+    if (value !== f.value) pending.add(key);
+    f.value = value;
   }
 }
 
@@ -59,6 +74,7 @@ function flush() {
   flushTimer = undefined;
   if (!hasStorage || !recording) return;
   refresh(captured);
+  pending.clear();
   void chrome.storage.local.get(DRAFT_KEY).then((res) => {
     const draft = res[DRAFT_KEY] as RecordingDraft<LearnedField> | undefined;
     if (!draft?.active || !recording) return;
@@ -70,15 +86,33 @@ function scheduleFlush() {
   if (flushTimer === undefined) flushTimer = window.setTimeout(flush, 250);
 }
 
+/** What this tab did for the last recording says nothing about the next one. */
+function forgetTouched() {
+  elements.clear();
+  touchedTicks.clear();
+  pending.clear();
+  captured.clear();
+}
+
 function applyDraft(draft?: RecordingDraft<LearnedField>) {
   if (!draft?.active) {
     recording = false;
-    captured.clear();
+    recordingFor = undefined;
+    forgetTouched();
     return;
   }
-  if (!recording) corrections.clear();
+  if (!recording) { corrections.clear(); forgetTouched(); }
+  else if (draft.travellerId !== recordingFor) forgetTouched();
+  recordingFor = draft.travellerId;
   recording = true;
-  for (const f of draft.fields ?? []) if (keep(f) && !captured.has(fieldKey(f))) captured.set(fieldKey(f), f);
+  // Another tab's latest word, except on changes this tab hasn't written yet. Taking
+  // it means what this tab's form still shows is no longer an answer to re-read.
+  for (const f of draft.fields ?? []) {
+    const key = fieldKey(f);
+    if (!keep(f) || pending.has(key)) continue;
+    if (captured.get(key)?.value !== f.value) { elements.delete(key); touchedTicks.delete(key); }
+    captured.set(key, f);
+  }
 }
 
 async function sendCorrections() {
@@ -114,7 +148,7 @@ function onEvent(e: Event) {
   const tick = e.type === "click" ? tickFrom(e.target) : null;
   if (tick) {
     const f = describeTick(tick); // its value is read again once the click has toggled it
-    if (f.selector) (recording ? captured : corrections).set(fieldKey(f), f);
+    if (f.selector) { touchedTicks.add(fieldKey(f)); pending.add(fieldKey(f)); (recording ? captured : corrections).set(fieldKey(f), f); }
   }
   const el = e.type === "click" ? inputFor(e.target) : e.target;
   if (!tick && el instanceof HTMLInputElement || el instanceof HTMLTextAreaElement || el instanceof HTMLSelectElement) {
@@ -125,6 +159,7 @@ function onEvent(e: Event) {
     // Lets the background retire older selector-less copies of this choice.
     if (f.control === "choice") f.options = [...(queryField(f.selector)?.querySelectorAll<HTMLInputElement>("input[readonly]") ?? [])].map((o) => o.value);
     elements.set(fieldKey(f), el);
+    pending.add(fieldKey(f));
     (recording ? captured : corrections).set(fieldKey(f), f);
   }
   // A click on a dropdown option changes its trigger's value without input
@@ -149,8 +184,23 @@ bus.addEventListener(REPLAYED, (e) => {
   const travellerId = (e as CustomEvent<string | undefined>).detail;
   filledFor = travellerId ? { path: location.pathname, travellerId } : null;
 });
+bus.addEventListener(CAPTURE, (e) => {
+  if (!recording) return;
+  for (const f of (e as CustomEvent<LearnedField[]>).detail) {
+    // Keyed as the live field describes itself, so a later edit updates this answer.
+    const el = findField(f);
+    if (!(el instanceof HTMLInputElement || el instanceof HTMLTextAreaElement || el instanceof HTMLSelectElement)) continue;
+    const live = describeField(el);
+    if (!live.selector) continue;
+    elements.set(fieldKey(live), el);
+    pending.add(fieldKey(live));
+    captured.set(fieldKey(live), live);
+  }
+  flush();
+});
 bus.addEventListener(SAVE_RECORDING, async () => {
   window.clearTimeout(flushTimer);
+  flushTimer = undefined;
   refresh(captured);
   try {
     const res = await chrome.runtime.sendMessage({ type: "SAVE_LEARNED", fields: answers() });
@@ -174,6 +224,7 @@ if (typeof chrome !== "undefined" && chrome.runtime?.onMessage) {
     // keystrokes from the last 250 ms that haven't reached the draft yet.
     if (msg?.type === "FLUSH_RECORDING") {
       window.clearTimeout(flushTimer);
+      flushTimer = undefined;
       refresh(captured);
       sendResponse({ ok: true, fields: answers() });
     }

@@ -1,4 +1,4 @@
-// Website signup for IndoArrival update emails. Stores only the email address.
+// Website signup for ArrivalFiller update emails. Stores only the email address.
 import { addSubscriber } from "../lib/store.js";
 
 export default async function handler(req, res) {

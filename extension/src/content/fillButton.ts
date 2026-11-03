@@ -1,11 +1,15 @@
 /** Floating learning/replay panel, isolated from the government page's styles. */
 import fieldMapJson from "../../../config/field-maps/allindonesia.v1.json";
 import { isReplayable, replayLearned, type FieldMap, type LearnedField } from "./formFill";
-import { controls, describeField, fieldKey } from "./formFields";
+import { controls, describeField, fieldKey, findField } from "./formFields";
 import { dateRuleText, isFormPage, pageNotes, planForPage, rememberable } from "./tripDefaults";
 import { ACTIVE_PROFILE_KEY, DRAFT_KEY, LEARNED_KEY, REVIEW_KEY, type RecordingDraft } from "../lib/keys";
 import { countFill, isLastPage, offerNever, REVIEW_URL, type ReviewState } from "./reviewAsk";
-import { bus, emit, REPLAYED, SAVE_RECORDING, SAVED } from "./bus";
+import { bus, CAPTURE, emit, REPLAYED, SAVE_RECORDING, SAVED } from "./bus";
+import { createOffer, OFFER_STYLE } from "./sharedOffer";
+import { makeDraggable } from "./dragPanel";
+import { REVEAL_STYLE, revealNewest, type Row } from "./revealNewest";
+import { INDONESIA_FIRST_PAGE } from "../lib/commonAnswers";
 
 const STYLE = `
  :host { all: initial; position: fixed; right: 18px; top: 12px; z-index: 2147483647;
@@ -16,8 +20,7 @@ const STYLE = `
  header button { background: none; color: white; padding: 2px 7px; font-size: 17px; }
  .body { padding: 12px; max-height: min(65vh, 520px); overflow: auto; } h2 { font-size: 14px; margin: 0 0 7px; }
  p { margin: 6px 0 9px; } .note { font-size: 12px; color: #52635e; }
- ul { list-style: none; padding: 0; margin: 8px 0; max-height: 180px; overflow: auto; position: relative; }
- li.fresh { background: #fdeee9; transition: background 1.5s; } li { transition: background 1.5s; }
+ ul { list-style: none; padding: 0; margin: 8px 0; max-height: 180px; overflow: auto; }
  li { border-top: 1px solid #e0e3dc; padding: 5px 0; overflow-wrap: anywhere; }
  li strong { display: block; font-size: 11px; color: #52635e; } li span { white-space: pre-wrap; }
  button { border: 0; border-radius: 7px; cursor: pointer; font: inherit; }
@@ -28,7 +31,7 @@ const STYLE = `
  .review .row { display: flex; flex-wrap: wrap; gap: 6px; } .review a, .review button { padding: 6px 10px; font-size: 12px; }
  .review a { background: #0E3A34; color: white; border-radius: 7px; text-decoration: none; font-weight: 700; }
  .review button { background: none; color: #0E3A34; text-decoration: underline; }
-`;
+${OFFER_STYLE}${REVEAL_STYLE}`;
 
 function displayLabel(f: LearnedField): string {
   if (f.label && f.label.length > 90) return `${f.label.slice(0, 88)}…`;
@@ -41,7 +44,7 @@ export function mountFillButton(): void {
   host.id = "indoarrival-panel";
   const root = host.attachShadow({ mode: "closed" });
   const style = document.createElement("style"); style.textContent = STYLE;
-  const panel = document.createElement("section"); panel.className = "panel"; panel.setAttribute("aria-label", "IndoArrival assistant");
+  const panel = document.createElement("section"); panel.className = "panel"; panel.setAttribute("aria-label", "ArrivalFiller assistant");
   const header = document.createElement("header");
   const brand = document.createElement("b");
   const toggle = document.createElement("button"); toggle.type = "button";
@@ -52,7 +55,21 @@ export function mountFillButton(): void {
   const action = document.createElement("button"); action.type = "button"; action.className = "action";
   const msg = document.createElement("div"); msg.className = "msg"; msg.setAttribute("role", "status");
   const review = document.createElement("div"); review.className = "review"; review.hidden = true;
-  header.append(brand, toggle); body.append(title, notes, list, action, msg, review); panel.append(header, body); root.append(style, panel);
+  const offer = createOffer({
+    country: "id",
+    say: (text) => { msg.textContent = text; },
+    async use(items) {
+      // Only over blank fields: never over something the traveller has typed.
+      const blank = items.flatMap((i) => i.answers as LearnedField[]).filter((f) => !(findField(f) as HTMLInputElement | null)?.value);
+      const result = await replayLearned(blank, fieldMapJson as unknown as FieldMap);
+      emit(CAPTURE, blank.filter((f) => result.filled.includes(f.label ?? "")));
+      const left = [...result.opened, ...result.missing];
+      return { filled: result.filled.length, text: `${result.filled.length} filled from your saved records.${left.length ? ` Fill yourself: ${left.join(", ")}.` : ""} Check them, then keep going.` };
+    },
+  });
+  header.append(brand, toggle); body.append(title, notes, offer.el, list, action, msg, review); panel.append(header, body); root.append(style, panel);
+
+  makeDraggable(host, header);
 
   let learned: LearnedField[] = [];
   let travellerId: string | undefined;
@@ -75,7 +92,7 @@ export function mountFillButton(): void {
   }
   function showReviewAsk(s: ReviewState) {
     const text = document.createElement("p");
-    text.textContent = "Saving you time? A quick review helps other travellers find IndoArrival.";
+    text.textContent = "Saving you time? A quick review helps other travellers find ArrivalFiller.";
     const link = document.createElement("a");
     link.href = REVIEW_URL; link.target = "_blank"; link.rel = "noopener noreferrer"; link.textContent = "Leave a review";
     link.addEventListener("click", () => void stopAsking());
@@ -109,12 +126,13 @@ export function mountFillButton(): void {
     const plan = planForPage(learned).filter(isReplayable);
     const visibleFields = new Set(controls().map(describeField).map(fieldKey)).size;
     const shown = recording ? (draft?.fields ?? []).filter(f => rememberable(f) && isReplayable(f)) : plan;
-    brand.textContent = recording ? `IndoArrival · Learning (${shown.length})` : "IndoArrival · Ready";
+    brand.textContent = recording ? `ArrivalFiller · Learning (${shown.length})` : "ArrivalFiller · Ready";
     toggle.textContent = collapsed ? "+" : "−";
-    toggle.setAttribute("aria-label", collapsed ? "Expand IndoArrival" : "Minimize IndoArrival");
+    toggle.setAttribute("aria-label", collapsed ? "Expand ArrivalFiller" : "Minimize ArrivalFiller");
     toggle.setAttribute("aria-expanded", String(!collapsed));
     body.hidden = collapsed;
     if (recording) savedNote = null;
+    offer.update(recording ? draft?.travellerId : undefined, location.pathname === INDONESIA_FIRST_PAGE);
     title.textContent = recording ? `Remembering ${shown.length} ${shown.length === 1 ? "field" : "fields"} as you fill`
       : savedNote ? savedNote.title
       : plan.length ? `I see ${visibleFields} ${visibleFields === 1 ? "field" : "fields"}; I can fill ${plan.length}` : "Nothing to fill on this page";
@@ -125,23 +143,17 @@ export function mountFillButton(): void {
     if (fingerprint !== signature) {
       fingerprint = signature;
       notes.replaceChildren(...text.map(t => { const p = document.createElement("p"); p.className = "note"; p.textContent = t; return p; }));
-      let latest: HTMLLIElement | undefined;
+      const rows: Row[] = [];
       list.replaceChildren(...shown.map(f => {
         const li = document.createElement("li");
         const label = document.createElement("strong"); label.textContent = displayLabel(f);
         const value = document.createElement("span"); value.textContent = dateRuleText(f) ?? f.value;
         li.append(label, value);
-        if (recording && lastShown.size && lastShown.get(fieldKey(f)) !== f.value) latest = li;
+        rows.push({ key: fieldKey(f), value: f.value, li });
         return li;
       }));
-      // Bring the answer just learned into view and flash it, so it's clear it was captured.
-      if (latest) {
-        const li = latest;
-        list.scrollTop = li.offsetTop - (list.clientHeight - li.offsetHeight) / 2;
-        li.classList.add("fresh");
-        window.setTimeout(() => li.classList.remove("fresh"), 50);
-      }
-      lastShown = new Map(shown.map(f => [fieldKey(f), f.value]));
+      if (recording) lastShown = revealNewest(lastShown, rows, list, body);
+      else { lastShown = new Map(); list.scrollTop = 0; }
     }
     action.textContent = recording ? "Done — save what I learned" : `Fill this page (${plan.length})`;
     action.disabled = busy || (!recording && plan.length === 0);
@@ -162,7 +174,7 @@ export function mountFillButton(): void {
       if (result.opened.length) bits.push(`Choose manually: ${result.opened.join(", ")}`);
       if (result.missing.length) bits.push(`Not found: ${result.missing.join(", ")}`);
       msg.textContent = `${bits.join(" · ")}. Review every answer before you continue.`;
-    } catch { msg.textContent = "Couldn't fill this page. Refresh it and try again."; }
+    } catch (e) { msg.textContent = /Still filling/.test((e as Error).message) ? (e as Error).message : "Couldn't fill this page. Refresh it and try again."; }
     finally { busy = false; render(); }
   });
   bus.addEventListener(SAVED, e => {

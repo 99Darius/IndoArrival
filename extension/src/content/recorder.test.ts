@@ -1,5 +1,6 @@
 // @vitest-environment jsdom
 import { describe, it, expect, beforeEach, vi } from "vitest";
+import { shutDownLastLoad } from "../test/isolate";
 import { DRAFT_KEY } from "../lib/keys";
 
 // jsdom has no CSS.escape; the recorder uses it for label lookup.
@@ -54,6 +55,7 @@ function type(id: string, value: string) {
 
 /** Load the content script as a fresh page would. */
 async function loadPage(store: Record<string, unknown>) {
+  shutDownLastLoad();
   vi.resetModules();
   const page = installChrome(store);
   await import("./recorder");
@@ -107,6 +109,41 @@ describe("recording", () => {
     type("spi_email_1", "a@b.c");
     const res = await page.send("FLUSH_RECORDING");
     expect(res.fields).toEqual([]);
+  });
+
+  it("takes another tab's answer in a new recording, on a field touched in the last one", async () => {
+    const store: Record<string, unknown> = {};
+    const page = await loadPage(store);
+    page.setDraft({ active: true, fields: [], travellerId: "t1" });
+    type("spi_full_name_1", "ANN");
+    const [field] = (await page.send("FLUSH_RECORDING")).fields;
+    page.setDraft(undefined);
+    page.setDraft({ active: true, fields: [{ ...field, value: "BEA" }], travellerId: "t2" });
+    expect((await page.send("FLUSH_RECORDING")).fields.map((f: { value: string }) => f.value)).toEqual(["BEA"]);
+  });
+
+  it("starts clean when the recording moves straight to another traveller", async () => {
+    const store: Record<string, unknown> = {};
+    const page = await loadPage(store);
+    page.setDraft({ active: true, fields: [], travellerId: "t1" });
+    type("spi_full_name_1", "ANN");
+    const [field] = (await page.send("FLUSH_RECORDING")).fields;
+    page.setDraft({ active: true, fields: [{ ...field, value: "BEA" }], travellerId: "t2" });
+    expect((await page.send("FLUSH_RECORDING")).fields.map((f: { value: string }) => f.value)).toEqual(["BEA"]);
+    type("spi_email_1", "bea@example.com");
+    expect((await page.send("FLUSH_RECORDING")).fields.map((f: { value: string }) => f.value).sort()).toEqual(["BEA", "bea@example.com"]);
+  });
+
+  it("doesn't bring back its old answer after another tab changed that field", async () => {
+    const store: Record<string, unknown> = { [DRAFT_KEY]: { active: true, fields: [], travellerId: "t1" } };
+    const page = await loadPage(store);
+    type("spi_full_name_1", "MINE");
+    await settle();
+    const [field] = (store[DRAFT_KEY] as { fields: { value: string }[] }).fields;
+    page.setDraft({ active: true, fields: [{ ...field, value: "THEIRS" }], travellerId: "t1" });
+    type("spi_email_1", "a@example.com");
+    await settle();
+    expect((store[DRAFT_KEY] as { fields: { value: string }[] }).fields.map(f => f.value).sort()).toEqual(["THEIRS", "a@example.com"]);
   });
 
   it("re-reads a dropdown picked without an input/change event", async () => {

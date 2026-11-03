@@ -24,3 +24,9 @@ export const ACTIVE_PROFILE_KEY = "active_profile";
 
 /** Review-ask counter (cards filled, asks shown, stopped); no personal data. */
 export const REVIEW_KEY = "review_ask";
+
+/** Travellers already asked about using another country's saved answers ("th:<id>"). No answers in here. */
+export const SHARED_CLOSED_KEY = "shared_offer_closed";
+
+/** Whose turn it is in the ad footer; no personal data. */
+export const AD_TURN_KEY = "ad_turn";

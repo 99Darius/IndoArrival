@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# IndoArrival Chrome Web Store CLI (Chrome Web Store API v2).
+# ArrivalFiller Chrome Web Store CLI (Chrome Web Store API v2).
 #
-#   store/cws build              build extension + zip -> store/indoarrival-<version>.zip
+#   store/cws build              build extension + zip -> store/arrivalfiller-<version>.zip
 #   store/cws status             item status (draft / in review / published)
 #   store/cws upload [zip]       upload a new package as a DRAFT (does not publish)
 #   store/cws publish --confirm  submit the uploaded draft for review / publish
@@ -35,7 +35,7 @@ call() { # METHOD URL [curl args...]
 case "${1:-}" in
   build)
     (cd "$root/extension" && npm run build >/dev/null)
-    zip="$here/indoarrival-$(version).zip"
+    zip="$here/arrivalfiller-$(version).zip"
     rm -f "$zip"
     (cd "$root/extension/dist" && zip -qr -X "$zip" . -x '.*' '*/.*')
     echo "$zip"
@@ -49,7 +49,7 @@ case "${1:-}" in
     ;;
   upload)
     need_ids
-    zip="${2:-$here/indoarrival-$(version).zip}"
+    zip="${2:-$here/arrivalfiller-$(version).zip}"
     [ -f "$zip" ] || die "no $zip — run: store/cws build"
     call POST "$API/upload/v2/publishers/$PUBLISHER_ID/items/$ITEM_ID:upload" \
       -H "Content-Type: application/zip" --data-binary "@$zip"

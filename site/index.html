@@ -3,15 +3,15 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>IndoArrival — fill Indonesia's arrival card in seconds</title>
-<meta name="description" content="Free browser extension that fills Indonesia's All Indonesia arrival card from answers you gave once. Several travellers, nothing leaves your browser, you review and submit.">
-<link rel="canonical" href="https://indoarrival.vercel.app/">
+<title>ArrivalFiller — fill Indonesia's and Thailand's arrival cards in seconds</title>
+<meta name="description" content="Free browser extension that fills Indonesia's All Indonesia card and Thailand's TDAC from answers you gave once. Several travellers, nothing leaves your browser, you review and submit.">
+<link rel="canonical" href="https://arrivalfiller.vercel.app/">
 <meta property="og:type" content="website">
-<meta property="og:site_name" content="IndoArrival">
-<meta property="og:title" content="IndoArrival — fill Indonesia's arrival card in seconds">
-<meta property="og:description" content="Fill the All Indonesia arrival card once. Next trip, press Fill on each page, check, and submit.">
-<meta property="og:url" content="https://indoarrival.vercel.app/">
-<meta property="og:image" content="https://indoarrival.vercel.app/icon-128.png">
+<meta property="og:site_name" content="ArrivalFiller">
+<meta property="og:title" content="ArrivalFiller — fill Indonesia's and Thailand's arrival cards in seconds">
+<meta property="og:description" content="Fill the arrival card once. Next trip, press Fill, check, and submit. Indonesia and Thailand.">
+<meta property="og:url" content="https://arrivalfiller.vercel.app/">
+<meta property="og:image" content="https://arrivalfiller.vercel.app/icon-128.png">
 <link rel="icon" href="icon-128.png">
 <link rel="stylesheet" href="style.css">
 </head>
@@ -19,12 +19,12 @@
   <div class="wrap">
 
     <header class="hero">
-      <img class="logo" src="icon-128.png" alt="IndoArrival">
-      <h1>Indonesia's arrival card,<br>filled in seconds.</h1>
-      <p class="tagline">A free browser extension for the official All Indonesia
-        arrival card. Fill it once as usual and IndoArrival remembers each
-        traveller's answers. Next trip, press <b>Fill</b> on each page, check,
-        and submit.</p>
+      <img class="logo" src="icon-128.png" alt="ArrivalFiller">
+      <h1>Arrival cards,<br>filled in seconds.</h1>
+      <p class="tagline">A free browser extension for the official arrival cards of
+        <b>Indonesia</b> and <b>Thailand</b>. Fill a card once as usual and ArrivalFiller
+        remembers each traveller's answers. Next trip, press <b>Fill</b>, check,
+        and submit. It used to be called IndoArrival.</p>
       <a class="cta" href="https://chromewebstore.google.com/detail/emdkbckehgnfnjggcfndccmjahncjkmc">Add to Chrome, free</a>
       <span class="cta-sub">Free and open source · Chrome, Brave and Edge · No account, no server</span>
       <a class="gh-link" href="https://github.com/99Darius/IndoArrival">Source code on GitHub →</a>
@@ -33,7 +33,7 @@
     <section>
       <div class="card signup">
         <h2>Get update emails</h2>
-        <p class="muted">Hear when IndoArrival changes to keep up with the arrival card, and about new features. Your email is the only thing we ever collect.</p>
+        <p class="muted">Hear when ArrivalFiller changes to keep up with the arrival cards, and about new features. Your email is the only thing we ever collect.</p>
         <form id="signup" class="dl-form" novalidate>
           <input type="email" id="signup-email" placeholder="you@example.com" autocomplete="email" aria-label="Email address" required>
           <button class="cta" type="submit">Notify me</button>
@@ -47,8 +47,8 @@
         <h2>How it looks on the form</h2>
         <div class="shots">
           <div class="shot">
-            <div class="panel" role="img" aria-label="IndoArrival panel learning answers">
-              <div class="bar"><span>IndoArrival · Learning (4)</span><span>−</span></div>
+            <div class="panel" role="img" aria-label="ArrivalFiller panel learning answers">
+              <div class="bar"><span>ArrivalFiller · Learning (4)</span><span>−</span></div>
               <div class="body">
                 <h3>Remembering 4 fields as you fill</h3>
                 <p class="pnote">Keep going through every page, then save here.</p>
@@ -64,8 +64,8 @@
             <div class="cap">First trip: fill the card as normal. The panel shows each answer as it is learned.</div>
           </div>
           <div class="shot">
-            <div class="panel" role="img" aria-label="IndoArrival panel ready to fill">
-              <div class="bar"><span>IndoArrival · Ready</span><span>−</span></div>
+            <div class="panel" role="img" aria-label="ArrivalFiller panel ready to fill">
+              <div class="bar"><span>ArrivalFiller · Ready</span><span>−</span></div>
               <div class="body">
                 <h3>I see 9 fields; I can fill 9</h3>
                 <p class="pnote">Fill this page, check the results, then move to the next page yourself.</p>
@@ -87,11 +87,15 @@
         <h2>What it does</h2>
         <div class="feature">
           <div class="ico">🛂</div>
-          <div><b>Fills every page</b><p>Passport, name, birth date, nationality, contact details, flight, port of entry, accommodation and your usual declaration answers.</p></div>
+          <div><b>Fills every page</b><p>Passport, name, birth date, nationality, contact details, flights and accommodation. Your usual declaration and health answers too, for you to check are still true.</p></div>
         </div>
         <div class="feature">
           <div class="ico">👨‍👩‍👧</div>
           <div><b>Several travellers</b><p>Keep answers for yourself, a partner, the kids. Switch in one click.</p></div>
+        </div>
+        <div class="feature">
+          <div class="ico">✨</div>
+          <div><b>Doesn't ask twice</b><p>Filled one country's card? On the next it offers your passport number, date of birth and other common details from your saved records. You choose whether to use them.</p></div>
         </div>
         <div class="feature">
           <div class="ico">📅</div>
@@ -103,7 +107,7 @@
         </div>
         <div class="feature">
           <div class="ico">✋</div>
-          <div><b>You stay in control</b><p>It never presses Next or Submit. You check every answer and submit yourself.</p></div>
+          <div><b>You stay in control</b><p>It never presses Next, Continue or Submit. You check every answer and submit yourself.</p></div>
         </div>
       </div>
     </section>
@@ -112,12 +116,12 @@
       <div class="card">
         <h2>Using it</h2>
         <ol>
-          <li>Install IndoArrival and name a traveller (for example yourself).</li>
-          <li>Open the arrival card at <code>allindonesia.imigrasi.go.id</code> and fill it once as usual.</li>
-          <li>Press <b>Done</b> in the panel. Those answers are saved for that traveller.</li>
-          <li>Next trip: pick the traveller, press <b>Fill</b> on each page, check, then press Next and Submit yourself.</li>
+          <li>Install ArrivalFiller, pick the country and name a traveller (for example yourself).</li>
+          <li>Open the arrival card (<code>allindonesia.imigrasi.go.id</code> or <code>tdac.immigration.go.th</code>) and fill it once as usual.</li>
+          <li>Press <b>Done</b>. Those answers are saved for that traveller.</li>
+          <li>Next trip: pick the traveller, press <b>Fill</b> on each page, check, then move on and press Submit yourself.</li>
         </ol>
-        <div class="note">IndoArrival is an independent tool. It is not affiliated with, endorsed by, or operated for the Government of Indonesia or the Directorate General of Immigration. You remain responsible for what you declare.</div>
+        <div class="note">ArrivalFiller is an independent tool. It is not affiliated with, endorsed by, or operated for the governments of Indonesia or Thailand or their immigration authorities. You remain responsible for what you declare.</div>
       </div>
     </section>
 

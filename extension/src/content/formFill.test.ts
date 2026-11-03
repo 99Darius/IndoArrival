@@ -44,6 +44,7 @@ describe("isReplayable", () => {
 
 describe("replayLearned choices", () => {
   it("picks the same option whichever language the site is in", async () => {
+    history.replaceState({}, "", "/");
     document.body.innerHTML = `
       <div><p>Jenis Kelamin</p><div id="spi_gender_1"><div><input readonly value="LAKI-LAKI"></div><div><input readonly value="PEREMPUAN"></div></div></div>`;
     let clicked = "";

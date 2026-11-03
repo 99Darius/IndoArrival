@@ -1,17 +1,18 @@
 {
   "manifest_version": 3,
-  "name": "IndoArrival — Indonesia arrival card autofill",
-  "version": "1.0.1",
-  "description": "Fills Indonesia's All Indonesia arrival card from answers you gave once. You check every field and submit. Unofficial.",
+  "name": "ArrivalFiller — arrival card autofill for Indonesia & Thailand",
+  "version": "1.1.0",
+  "description": "Fills Indonesia's and Thailand's arrival cards from answers you gave once. You check every field and submit. Unofficial.",
   "permissions": [
     "storage"
   ],
   "host_permissions": [
-    "https://allindonesia.imigrasi.go.id/*"
+    "https://allindonesia.imigrasi.go.id/*",
+    "https://tdac.immigration.go.th/*"
   ],
   "action": {
     "default_popup": "src/popup/index.html",
-    "default_title": "IndoArrival",
+    "default_title": "ArrivalFiller",
     "default_icon": {
       "16": "icons/icon-16.png",
       "32": "icons/icon-32.png",
@@ -31,6 +32,15 @@
         "src/content/govForm.ts"
       ],
       "run_at": "document_idle"
+    },
+    {
+      "matches": [
+        "https://tdac.immigration.go.th/*"
+      ],
+      "js": [
+        "src/content/th/main.ts"
+      ],
+      "run_at": "document_idle"
     }
   ],
   "icons": {
@@ -39,6 +49,6 @@
     "48": "icons/icon-48.png",
     "128": "icons/icon-128.png"
   },
-  "homepage_url": "https://indoarrival.vercel.app",
+  "homepage_url": "https://arrivalfiller.vercel.app",
   "minimum_chrome_version": "105"
 }

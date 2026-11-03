@@ -14,5 +14,9 @@ export const REPLAYED = "replayed";
 /** Panel asks the recorder to save; recorder answers with SAVED (detail: ok). */
 export const SAVE_RECORDING = "save-recording";
 export const SAVED = "saved";
+/** Saved answers the traveller chose to use were filled: the recorder keeps them (detail: the answers). */
+export const CAPTURE = "capture";
+/** The form moved to another person mid-recording: the recorder stopped learning. */
+export const PERSON_CHANGED = "person-changed";
 
 export const emit = (type: string, detail?: unknown) => bus.dispatchEvent(new CustomEvent(type, { detail }));
