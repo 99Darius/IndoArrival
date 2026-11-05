@@ -11,3 +11,7 @@ dist/
 coverage/
 *.tsbuildinfo
 store/*.zip
+
+# Public repo: keep HQ's financial and cross-venture files local
+moat/ledger.csv
+moat/from-holdco/*-experts.md
