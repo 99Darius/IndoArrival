@@ -36,7 +36,7 @@ What it fills
 • Flights and accommodation
 • Visa number
 • Indonesia: country of birth, port of entry and your usual declaration answers (health, countries visited, quarantine, goods, phones/IMEI), if you taught them
-• Thailand: occupation, country and city of residence, purpose of travel, your health step answers (countries visited, yellow fever vaccination, symptoms), and on the last page your email, if you taught them
+• Thailand: occupation, country and city of residence, purpose of travel and your health step answers (countries visited, yellow fever vaccination, symptoms), if you taught them
 • Trip dates follow your usual pattern (for example: arrive tomorrow, leave 14 days later). Change either any time.
 
 Doesn't ask twice
@@ -53,10 +53,10 @@ Several travellers
 Keep a separate set of answers for each person and switch between them in one click. Each country keeps its own travellers.
 
 Privacy
-Your answers are stored only in this browser's extension storage. Delete one traveller, or press "Erase all data", or uninstall to remove everything. It only works on Thailand's site after you pick Thailand and allow it when Chrome asks. Full policy: https://arrivalfiller.vercel.app/privacy.html
+Your answers are stored only in this browser's extension storage. Delete one traveller, or press "Erase all data", or uninstall to remove everything. Full policy: https://arrivalfiller.vercel.app/privacy.html
 
 Open source
-The code is public, so anyone can check what it does: https://github.com/99Darius/IndoArrival
+The code is public, so anyone can check what it does: https://github.com/99Darius/ArrivalFiller
 
 ArrivalFiller is an independent tool. It is not affiliated with, endorsed by, or operated for the governments of Indonesia or Thailand or their immigration authorities. The extension shows one advertisement at a time, for theAsianparent, a parenting app, or, on Indonesia's card only, Rumah123, a property website; neither receives any data from ArrivalFiller.
 ```

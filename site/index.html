@@ -3,23 +3,30 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ArrivalFiller — fill Indonesia's and Thailand's arrival cards in seconds</title>
+<title>ArrivalFiller: autofill Indonesia and Thailand arrival cards</title>
 <meta name="description" content="Free browser extension that fills Indonesia's All Indonesia card and Thailand's TDAC from answers you gave once. Several travellers, nothing leaves your browser, you review and submit.">
 <link rel="canonical" href="https://arrivalfiller.vercel.app/">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="ArrivalFiller">
-<meta property="og:title" content="ArrivalFiller — fill Indonesia's and Thailand's arrival cards in seconds">
+<meta property="og:title" content="ArrivalFiller: autofill Indonesia and Thailand arrival cards">
 <meta property="og:description" content="Fill the arrival card once. Next trip, press Fill, check, and submit. Indonesia and Thailand.">
 <meta property="og:url" content="https://arrivalfiller.vercel.app/">
-<meta property="og:image" content="https://arrivalfiller.vercel.app/icon-128.png">
-<link rel="icon" href="icon-128.png">
-<link rel="stylesheet" href="style.css">
+<meta property="og:image" content="https://arrivalfiller.vercel.app/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="/icon-128.png">
+<link rel="stylesheet" href="/style.css">
+<!--JSONLD-->
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"ArrivalFiller","applicationCategory":"BrowserApplication","operatingSystem":"Chrome","url":"https://arrivalfiller.vercel.app/","downloadUrl":"https://chromewebstore.google.com/detail/emdkbckehgnfnjggcfndccmjahncjkmc","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Free Chrome extension that fills the official arrival cards of Indonesia and Thailand from answers a traveller gave once."}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","name":"ArrivalFiller","url":"https://arrivalfiller.vercel.app/","logo":"https://arrivalfiller.vercel.app/icon-128.png","founder":{"@type":"Person","name":"Darius Cheung"},"sameAs":["https://chromewebstore.google.com/detail/emdkbckehgnfnjggcfndccmjahncjkmc","https://github.com/99Darius/ArrivalFiller"]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What does ArrivalFiller do?","acceptedAnswer":{"@type":"Answer","text":"It's a free Chrome extension for the official arrival cards of Indonesia and Thailand. Fill a card once as usual and it remembers that traveller's answers. Next trip, press Fill on each page, check everything, and submit yourself."}},{"@type":"Question","name":"Is it an official government service?","acceptedAnswer":{"@type":"Answer","text":"No. It's an independent tool, not affiliated with either government. It fills the official form on the official website, and you remain responsible for what you declare."}},{"@type":"Question","name":"Does it submit the card for me?","acceptedAnswer":{"@type":"Answer","text":"No. It never presses Next, Continue, Agree or Submit. You check each answer and press those yourself."}},{"@type":"Question","name":"Where do my passport details go?","acceptedAnswer":{"@type":"Answer","text":"Nowhere. The extension stores them only in your browser's extension storage. It has no account, no server and no analytics, and uninstalling it deletes everything."}},{"@type":"Question","name":"Can it fix an error on the government's site?","acceptedAnswer":{"@type":"Answer","text":"No. If the site is down or rejects a request, only the government can fix that. It does save you retyping when you have to start again."}},{"@type":"Question","name":"Does it cost anything?","acceptedAnswer":{"@type":"Answer","text":"No, and the arrival cards themselves are free too. Be careful of websites that charge a fee to submit them."}}]}</script>
+<!--/JSONLD-->
+<script src="/ga.js" defer></script>
 </head>
 <body>
   <div class="wrap">
 
     <header class="hero">
-      <img class="logo" src="icon-128.png" alt="ArrivalFiller">
+      <img class="logo" src="/icon-128.png" alt="ArrivalFiller" width="92" height="92">
       <h1>Arrival cards,<br>filled in seconds.</h1>
       <p class="tagline">A free browser extension for the official arrival cards of
         <b>Indonesia</b> and <b>Thailand</b>. Fill a card once as usual and ArrivalFiller
@@ -27,13 +34,13 @@
         and submit. It used to be called IndoArrival.</p>
       <a class="cta" href="https://chromewebstore.google.com/detail/emdkbckehgnfnjggcfndccmjahncjkmc">Add to Chrome, free</a>
       <span class="cta-sub">Free and open source · Chrome, Brave and Edge · No account, no server</span>
-      <a class="gh-link" href="https://github.com/99Darius/IndoArrival">Source code on GitHub →</a>
+      <a class="gh-link" href="https://github.com/99Darius/ArrivalFiller">Source code on GitHub →</a>
     </header>
 
     <section>
       <div class="card signup">
         <h2>Get update emails</h2>
-        <p class="muted">Hear when ArrivalFiller changes to keep up with the arrival cards, and about new features. Your email is the only thing we ever collect.</p>
+        <p class="muted">Hear when ArrivalFiller changes to keep up with the arrival cards, and about new features. We only use your email for this.</p>
         <form id="signup" class="dl-form" novalidate>
           <input type="email" id="signup-email" placeholder="you@example.com" autocomplete="email" aria-label="Email address" required>
           <button class="cta" type="submit">Notify me</button>
@@ -103,7 +110,7 @@
         </div>
         <div class="feature">
           <div class="ico">🔒</div>
-          <div><b>Stays in your browser</b><p>No account, no server, no analytics. Nothing is sent to us.</p></div>
+          <div><b>Stays in your browser</b><p>The extension has no account, no server and no analytics. Your answers are never sent to us.</p></div>
         </div>
         <div class="feature">
           <div class="ico">✋</div>
@@ -125,9 +132,54 @@
       </div>
     </section>
 
+    <section>
+      <div class="card" id="problems">
+        <h2>Is the form giving you trouble?</h2>
+        <p class="muted">Free guides to what goes wrong, using the forms' own error messages. <a href="/arrival-card-problems">Start here</a> if you aren't sure which one you need.</p>
+        <div class="guide-group"><a href="/thailand">Thailand (TDAC)</a></div>
+        <ul class="guides">
+          <li><a href="/thailand/tdac-not-working">TDAC not working: what each error message means</a></li>
+          <li><a href="/thailand/tdac-date-error">Why you can't select your arrival date</a></li>
+          <li><a href="/thailand/tdac-name-passport-phone-errors">Name, passport or phone rejected: the exact rules</a></li>
+          <li><a href="/thailand/tdac-accommodation-address-error">Accommodation or address step stuck</a></li>
+          <li><a href="/thailand/tdac-email-not-received">Confirmation email not received</a></li>
+          <li><a href="/thailand/tdac-change-after-submit">How to change a TDAC after submitting</a></li>
+          <li><a href="/thailand/tdac-fake-websites">Fake TDAC websites, and what to do if you paid</a></li>
+        </ul>
+        <div class="guide-group"><a href="/indonesia">Indonesia (All Indonesia)</a></div>
+        <ul class="guides">
+          <li><a href="/indonesia/all-indonesia-not-working">All Indonesia not working: causes and fixes</a></li>
+          <li><a href="/indonesia/all-indonesia-qr-code-not-received">QR code not received, and how to get it back</a></li>
+          <li><a href="/indonesia/all-indonesia-update-after-submit">How to update your card after submitting</a></li>
+          <li><a href="/indonesia/all-indonesia-family-group">Families, kids and group filing</a></li>
+          <li><a href="/indonesia/all-indonesia-fake-websites">Fake All Indonesia websites, and what to do if you paid</a></li>
+        </ul>
+      </div>
+    </section>
+
+    <section>
+      <div class="card faq">
+        <h2>Questions</h2>
+<!--FAQ-->
+        <h3>What does ArrivalFiller do?</h3>
+        <p>It's a free Chrome extension for the official arrival cards of Indonesia and Thailand. Fill a card once as usual and it remembers that traveller's answers. Next trip, press Fill on each page, check everything, and submit yourself.</p>
+        <h3>Is it an official government service?</h3>
+        <p>No. It's an independent tool, not affiliated with either government. It fills the official form on the official website, and you remain responsible for what you declare.</p>
+        <h3>Does it submit the card for me?</h3>
+        <p>No. It never presses Next, Continue, Agree or Submit. You check each answer and press those yourself.</p>
+        <h3>Where do my passport details go?</h3>
+        <p>Nowhere. The extension stores them only in your browser's extension storage. It has no account, no server and no analytics, and uninstalling it deletes everything.</p>
+        <h3>Can it fix an error on the government's site?</h3>
+        <p>No. If the site is down or rejects a request, only the government can fix that. It does save you retyping when you have to start again.</p>
+        <h3>Does it cost anything?</h3>
+        <p>No, and the arrival cards themselves are free too. Be careful of websites that charge a fee to submit them.</p>
+<!--/FAQ-->
+      </div>
+    </section>
+
     <footer>
-      <a href="privacy.html">Privacy policy</a> · <a href="mailto:darius.cheung@gmail.com">Contact</a><br>
-      Free. Made by Darius Cheung.
+      <a href="/thailand">Thailand TDAC</a> · <a href="/indonesia">All Indonesia</a> · <a href="/arrival-card-problems">Form problems</a> · <a href="/privacy">Privacy policy</a> · <a href="mailto:darius.cheung@gmail.com">Contact</a><br>
+      ArrivalFiller is independent. It is not affiliated with the governments of Thailand or Indonesia. Free. Made by Darius Cheung.
     </footer>
 
   </div>

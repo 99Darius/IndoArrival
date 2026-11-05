@@ -7,6 +7,7 @@
     "@vercel/blob": "^2.0.0"
   },
   "scripts": {
+    "pages": "node scripts/build-pages.mjs && node scripts/check-pages.mjs",
     "leads": "vercel env pull .env.local --yes >/dev/null && node --env-file=.env.local scripts/leads.mjs"
   }
 }

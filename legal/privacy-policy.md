@@ -1,6 +1,6 @@
 # Privacy Policy — ArrivalFiller (formerly IndoArrival)
 
-The published policy is **https://arrivalfiller.vercel.app/privacy.html**; its source
+The published policy is **https://arrivalfiller.vercel.app/privacy** (`/privacy.html` redirects there); its source
 is `site/privacy.html`. Edit that file and redeploy (`cd site && vercel deploy --prod`).
 
 Summary (extension v1.1): everything the extension saves stays in
@@ -11,7 +11,8 @@ certificate file; a count of cards filled
 drives an occasional "Leave a review" link (no data sent); Erase all data /
 uninstall deletes everything.
 
-The website (not the extension) has an optional form to sign up for update emails.
+The website (not the extension) uses Google Analytics to count visits, without advertising
+features and without analytics cookies in the EEA, UK and Switzerland. It also has an optional form to sign up for update emails.
 Only the email address the visitor types is stored, encrypted, to send release
 news; anyone can ask to be removed.
 

@@ -124,6 +124,34 @@ article h2 { font-size: 20px; margin: 30px 0 8px; }
 article p, article li { font-size: 15.5px; }
 .muted { color: var(--muted); font-size: 14px; }
 
+nav.top .links { display: inline-flex; gap: 14px; flex-wrap: wrap; }
+nav.top .links a { font-weight: 500; }
+.crumbs { font-size: 13px; color: var(--muted); margin-top: 14px; }
+.crumbs a { text-decoration: none; }
+
+/* Guides */
+article h3 { font-size: 16.5px; margin: 20px 0 4px; }
+article ol, article ul { padding-left: 22px; }
+article li { margin: 8px 0; }
+.answer {
+  background: var(--accent-soft); border: 1px solid var(--accent-border);
+  border-radius: 12px; padding: 16px 18px; margin: 18px 0 8px;
+}
+.answer p { margin: 4px 0 0; }
+.table { overflow-x: auto; margin: 14px 0; }
+table { border-collapse: collapse; width: 100%; font-size: 14.5px; }
+th, td { border: 1px solid var(--accent-border); padding: 8px 10px; text-align: left; vertical-align: top; }
+th { background: var(--accent-soft); }
+.bridge { text-align: center; border-top: 1px solid var(--accent-border); margin-top: 30px; padding-top: 22px; }
+.bridge p { max-width: 520px; margin: 0 auto 16px; }
+.sources { font-size: 14px; }
+.guides { list-style: none; padding: 0; margin: 0; }
+.guides li { border-top: 1px solid var(--accent-border); padding: 9px 0; font-size: 15px; }
+.guides li:first-child { border-top: 0; }
+.guide-group { font-size: 13px; font-weight: 700; color: var(--muted); margin: 18px 0 4px; text-transform: uppercase; letter-spacing: .04em; }
+.faq h3 { font-size: 15.5px; margin: 16px 0 2px; }
+.faq p { font-size: 14.5px; color: var(--muted); margin: 0; }
+
 @media (max-width: 560px) {
   h1 { font-size: 31px; }
   header.hero { padding: 52px 0 36px; }
